@@ -76,6 +76,9 @@ fi
 # /*==============================
 # =            NODEJS            =
 # ==============================*/
+
+if [ $INSTALL_NODEJS == 1 ]; then
+
 sudo apt-get -y install nodejs
 sudo apt-get -y install npm
 
@@ -84,24 +87,50 @@ sudo npm install -g npm
 # Use NVM though to make life easy
 wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | bash
 source ~/.nvm/nvm.sh
-nvm install 8.9.4
+nvm install 8.11.2
 
 echo 'Node installed'
 
 # Node Packages
-sudo npm install -g gulp-cli
-echo 'Node Glup-cli installed'
-sudo npm install gulp -D
-echo 'Node Glup installed'
+#sudo npm install -g gulp-cli
+#echo 'Node Glup-cli installed'
+#sudo npm install gulp -D
+#echo 'Node Glup installed'
 #sudo npm install -g grunt-cli
 #sudo npm install -g bower
 #sudo npm install -g yo
-sudo npm install -g browser-sync
-echo 'Node Browser Sync installed'
+#sudo npm install -g browser-sync
+#echo 'Node Browser Sync installed'
 #sudo npm install -g browserify
 #sudo npm install -g pm2
 
+fi
 
+# /*==============================
+# =            OCTOBERCMS        =
+# ==============================*/
+
+if [ $INSTALL_OCTOBERCMS == 1 ]; then
+
+    cd /var/www/public/ && curl -s https://octobercms.com/api/installer | php && cd ~
+
+    sudo chmod -R 775 /var/www/public/storage/
+    sudo chmod -R 775 /var/www/public/themes
+    sudo chmod -R 775 /var/www/public/storage/app/uploads
+
+    #php /var/www/public/artisan october:env
+    
+    #sed -i -e "/DB_DATABASE/c\DB_DATABASE=$MYSQL_DB_NAME" /var/www/public/.env
+    sed -i "s/http:\/\/localhost/http:\/\/$GUEST_HOSTNAME/g" /var/www/public/config/app.php
+    NEW_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+    sed -i "s/CHANGE_ME!!!!!!!!!!!!!!!!!!!!!!!/$NEW_UUID/g" /var/www/public/config/app.php
+    sed -i "s/=> 'localhost'/=> '127.0.0.1'/g" /var/www/public/config/database.php
+    sed -i "s/=> 'database'/=> '$MYSQL_DB_NAME'/g" /var/www/public/config/database.php
+
+#php /var/www/public/artisan key:generate
+#php /var/www/public/artisan october:install
+
+fi
 
 # /*============================
 # =            YARN            =

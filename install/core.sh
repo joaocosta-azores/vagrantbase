@@ -31,5 +31,8 @@ sudo apt-get install -y python-software-properties
 sudo apt-get -y install vim
 sudo apt-get -y install git
 
+git config --global user.email "$EMAIL"
+git config --global user.name "$GITNAME"
+
 # Weird Vagrant issue fix
 sudo apt-get install -y ifupdown
